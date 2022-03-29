@@ -1,10 +1,21 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
 
+app = Flask(__name__)
+api = Api(app)
+
 nf_db = [
         {'nfId': '100', 'nfType': 'AMF', 'ip': '172.30.0.3', 'port': 8001},
         {'nfId': '200', 'nfType': 'SMF', 'ip': '172.30.0.4', 'port': 8002}
 ]
+
+@app.route('/')
+def profiles():
+    profiles = {}
+    for nf_data in nf_db:
+        nf_id = nf_data.pop('nfId')
+        profiles[nf_id] = nf_data
+    return profiles
 
 def remove_entry(nf_db, nf_id):
     for i in range(len(nf_db)):
@@ -60,9 +71,6 @@ class NFProfile(Resource):
             remove_entry(nf_db, nf_id)
             return {'message' : f"NFID {nf_id} removed successfully"}, 204
 
-
 if __name__ == '__main__':
-    app = Flask(__name__)
-    api = Api(app)
     api.add_resource(NFProfile, '/nfprofile/<string:nf_id>')
     app.run(debug=True)
