@@ -7,6 +7,10 @@
 
 `python3 src/nrfApp.py`
 
+## Running the tests
+
+`python3 -m pytest tests/`
+
 ## GET/PUT/DELETE 
 ```
 [GET]
