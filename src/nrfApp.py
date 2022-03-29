@@ -16,11 +16,23 @@ def get_entry(nf_db, nf_id):
     for i in range(len(nf_db)):
         if nf_db[i]['nfId'] == nf_id:
             return nf_db[i]
-            
+
 class NFProfile(Resource):
-    def put(self):
+
+    def get(self, nf_id):
+
+        # Check if the nfId already exists
+        nf_id_list = list(map(lambda x: x['nfId'], nf_db))
+
+        if nf_id not in nf_id_list:
+            return { 'message': f"NFID {nf_id} not found" }, 404
+        else:
+            nf_data = get_entry(nf_db, nf_id)
+            return nf_data, 200
+        
+
+    def put(self, nf_id):
         parser = reqparse.RequestParser()
-        parser.add_argument('nfId', required=True, type=str)
         parser.add_argument('nfType', required=True, type=str)
         parser.add_argument('ip', required=True, type=str)
         parser.add_argument('port', required=False, type=int)
@@ -29,32 +41,28 @@ class NFProfile(Resource):
         # Check if the nfId already exists
         nf_id_list = list(map(lambda x: x['nfId'], nf_db))
 
-        if args['nfId'] in nf_id_list:
-            return { 'message': f"NFID {args['nfId']} already exists" }, 409
+        if nf_id in nf_id_list:
+            return { 'message': f"NFID {nf_id} already exists" }, 409
         else:
             # Push the data to the NF DB
-            nf_data = {'nfId': args['nfId'], 'nfType': args['nfType'], 'ip': args['ip'], 'port': args['port']}
+            nf_data = {'nfId': nf_id, 'nfType': args['nfType'], 'ip': args['ip'], 'port': args['port']}
             nf_db.append(nf_data)
-            return nf_data, 200
+            return nf_data, 201
     
-    def delete(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument('nfId', required=True, type=str)
-        args = parser.parse_args()
-
+    def delete(self, nf_id):
         # Check if the nfId exists
         nf_id_list = list(map(lambda x: x['nfId'], nf_db))
 
-        if args['nfId'] not in nf_id_list:
-            return { 'message': f"NFID {args['nfId']} not found" }, 404
+        if nf_id not in nf_id_list:
+            return { 'message': f"NFID {nf_id} not found" }, 404
         else:
             # Delete the entry from NF DB
-            remove_entry(nf_db, args['nfId'])
-            return {'message' : f"NFID {args['nfId']} removed successfully"}, 200
+            remove_entry(nf_db, nf_id)
+            return {'message' : f"NFID {nf_id} removed successfully"}, 204
 
 
 if __name__ == '__main__':
     app = Flask(__name__)
     api = Api(app)
-    api.add_resource(NFProfile, '/nfprofile')
+    api.add_resource(NFProfile, '/nfprofile/<string:nf_id>')
     app.run(debug=True)
