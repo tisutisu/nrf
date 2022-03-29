@@ -5,7 +5,7 @@
 
 ## Running the application on development mode
 
-`python3 nrfApp.py`
+`python3 src/nrfApp.py`
 
 ## PUT/DELETE 
 ```
