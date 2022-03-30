@@ -82,4 +82,4 @@ class NFProfile(Resource):
 
 if __name__ == '__main__':
     api.add_resource(NFProfile, '/nfprofile/<string:nf_id>')
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
