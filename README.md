@@ -11,6 +11,13 @@
 
 `python3 -m pytest tests/`
 
+## Running on docker
+
+```
+docker build -t nrf_image:latest .
+docker run -p 5000:5000 -d nrf_image:latest
+
+```
 ## GET/PUT/DELETE 
 ```
 [GET]
