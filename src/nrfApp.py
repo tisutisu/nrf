@@ -13,9 +13,18 @@ nf_db = [
 def profiles():
     profiles = {}
     for nf_data in nf_db:
-        nf_id = nf_data.pop('nfId')
+        nf_id = get_value_from_dict_except_key(nf_data, 'nfId')
         profiles[nf_id] = nf_data
     return profiles
+
+def get_value_from_dict_except_key(dictionary, key):
+    new_dict = {}
+    for k, v in dictionary.items():
+        if k == key:
+            value = dictionary[key]
+        else:
+            new_dict[k] = v
+    return value
 
 def remove_entry(nf_db, nf_id):
     for i in range(len(nf_db)):
