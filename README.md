@@ -14,9 +14,9 @@
 ## Running on docker
 
 ```
+docker pull quay.io/susdas/nrf_image:latest
 docker build -t nrf_image:latest .
 docker run -p 5000:5000 -d nrf_image:latest
-
 ```
 ## GET/PUT/DELETE 
 ```
