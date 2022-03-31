@@ -5,30 +5,33 @@ import mysqlDB
 app = Flask(__name__)
 api = Api(app)
 
-db = mysqlDB.open_connection()
-cursor = db.cursor()
-
-nf_db = [
-        {'nfId': '100', 'nfType': 'AMF', 'ip': '172.30.0.3', 'port': 8001},
-        {'nfId': '200', 'nfType': 'SMF', 'ip': '172.30.0.4', 'port': 8002}
-]
-
 @app.route('/')
 def profiles():
+    #Open connection
+    db = mysqlDB.open_connection()
+    cursor = db.cursor()
+    #Fetch the data
     data = mysqlDB.fetch_all(cursor)
+    #Close connection
+    mysqlDB.close_connection(db)
     return data, 200
 
 class NFProfile(Resource):
 
     def get(self, nf_id):
-
+        #Open connection
+        db = mysqlDB.open_connection()
+        cursor = db.cursor()
+ 
         # Check if the nfId already exists
         nf_id_list = mysqlDB.get_all_ids(cursor)
 
         if nf_id not in nf_id_list:
+            mysqlDB.close_connection(db)
             return { 'message': f"NFID {nf_id} not found" }, 404
         else:
             nf_data = mysqlDB.fetch_with_id(cursor, nf_id)
+            mysqlDB.close_connection(db)
             return nf_data, 200
         
 
@@ -38,27 +41,38 @@ class NFProfile(Resource):
         parser.add_argument('ip', required=True, type=str)
         parser.add_argument('port', required=False, type=int)
         args = parser.parse_args()
-
+        
+        #Open connection
+        db = mysqlDB.open_connection()
+        cursor = db.cursor()
         # Check if the nfId already exists
         nf_id_list = mysqlDB.get_all_ids(cursor)
 
         if nf_id in nf_id_list:
+            mysqlDB.close_connection(db)
             return { 'message': f"NFID {nf_id} already exists" }, 409
         else:
             # Push the data to the NF DB
             nf_data = (nf_id, args['nfType'], args['ip'], args['port'])
             mysqlDB.insert_data(db, cursor, nf_data)
+            mysqlDB.close_connection(db)
             return {'message': f"Successfully created the profile"}, 201
     
     def delete(self, nf_id):
+        #Open connection
+        db = mysqlDB.open_connection()
+        cursor = db.cursor()
+
         # Check if the nfId exists
         nf_id_list = mysqlDB.get_all_ids(cursor)
 
         if nf_id not in nf_id_list:
+            mysqlDB.close_connection(db)
             return { 'message': f"NFID {nf_id} not found" }, 404
         else:
             # Delete the entry from NF DB
             mysqlDB.delete_data(db, cursor, nf_id)
+            mysqlDB.close_connection(db)
             return {'message' : f"NFID {nf_id} removed successfully"}, 204
 
 if __name__ == '__main__':
