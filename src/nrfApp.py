@@ -1,8 +1,12 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse
+import mysqlDB
 
 app = Flask(__name__)
 api = Api(app)
+
+db = mysqlDB.open_connection()
+cursor = db.cursor()
 
 nf_db = [
         {'nfId': '100', 'nfType': 'AMF', 'ip': '172.30.0.3', 'port': 8001},
@@ -11,43 +15,20 @@ nf_db = [
 
 @app.route('/')
 def profiles():
-    profiles = {}
-    for nf_data in nf_db:
-        nf_id = get_value_from_dict_except_key(nf_data, 'nfId')
-        profiles[nf_id] = nf_data
-    return profiles
-
-def get_value_from_dict_except_key(dictionary, key):
-    new_dict = {}
-    for k, v in dictionary.items():
-        if k == key:
-            value = dictionary[key]
-        else:
-            new_dict[k] = v
-    return value
-
-def remove_entry(nf_db, nf_id):
-    for i in range(len(nf_db)):
-        if nf_db[i]['nfId'] == nf_id:
-            del nf_db[i]
-            return
-
-def get_entry(nf_db, nf_id):
-    for i in range(len(nf_db)):
-        if nf_db[i]['nfId'] == nf_id:
-            return nf_db[i]
+    data = mysqlDB.fetch_all(cursor)
+    return data, 200
 
 class NFProfile(Resource):
 
     def get(self, nf_id):
 
         # Check if the nfId already exists
-        nf_id_list = list(map(lambda x: x['nfId'], nf_db))
+        nf_id_list = mysqlDB.get_all_ids(cursor)
 
         if nf_id not in nf_id_list:
             return { 'message': f"NFID {nf_id} not found" }, 404
         else:
-            nf_data = get_entry(nf_db, nf_id)
+            nf_data = mysqlDB.fetch_with_id(cursor, nf_id)
             return nf_data, 200
         
 
@@ -59,25 +40,25 @@ class NFProfile(Resource):
         args = parser.parse_args()
 
         # Check if the nfId already exists
-        nf_id_list = list(map(lambda x: x['nfId'], nf_db))
+        nf_id_list = mysqlDB.get_all_ids(cursor)
 
         if nf_id in nf_id_list:
             return { 'message': f"NFID {nf_id} already exists" }, 409
         else:
             # Push the data to the NF DB
-            nf_data = {'nfId': nf_id, 'nfType': args['nfType'], 'ip': args['ip'], 'port': args['port']}
-            nf_db.append(nf_data)
-            return nf_data, 201
+            nf_data = (nf_id, args['nfType'], args['ip'], args['port'])
+            mysqlDB.insert_data(db, cursor, nf_data)
+            return {'message': f"Successfully created the profile"}, 201
     
     def delete(self, nf_id):
         # Check if the nfId exists
-        nf_id_list = list(map(lambda x: x['nfId'], nf_db))
+        nf_id_list = mysqlDB.get_all_ids(cursor)
 
         if nf_id not in nf_id_list:
             return { 'message': f"NFID {nf_id} not found" }, 404
         else:
             # Delete the entry from NF DB
-            remove_entry(nf_db, nf_id)
+            mysqlDB.delete_data(db, cursor, nf_id)
             return {'message' : f"NFID {nf_id} removed successfully"}, 204
 
 if __name__ == '__main__':
