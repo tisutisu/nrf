@@ -22,6 +22,7 @@ You may also use the latest image from quay.io
 ## GET/PUT/DELETE 
 ```
 [GET]
+curl -X GET http://localhost:5000/
 curl -X GET http://localhost:5000/nfprofile/100
 
 [PUT]
