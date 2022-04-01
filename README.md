@@ -39,7 +39,7 @@ helm install restapi-release restapi-chart/ -n nrf
 helm install mysql-release mysql-chart/ -n nrf -f mysql-chart/customvalues.yaml
 ```
 
-##DB Provisioning
+## DB Provisioning
 using kubectl exec cmd, login into the pod and run "scripts/sql.sh" cmds for db initialization
 
 ## Port Forwarding
