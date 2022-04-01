@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  dbname: nf_db
+  host: mysql.{{ .Release.Namespace }}
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: restapi-cm
