@@ -33,3 +33,8 @@ curl -d "nfType=UDM&ip=11.11.11.11" -X PUT http://localhost:5000/nfprofile/400
 curl -X DELETE http://localhost:5000/nfprofile/400
 ```
 
+## Helm Cmds
+```
+helm install nrf-release nrf-chart/ -n nrf
+helm install nrf-release nrf-chart/ -n nrf -f nrf-chart/customvalues.yaml
+```
