@@ -38,3 +38,8 @@ curl -X DELETE http://localhost:5000/nfprofile/400
 helm install nrf-release nrf-chart/ -n nrf
 helm install nrf-release nrf-chart/ -n nrf -f nrf-chart/customvalues.yaml
 ```
+
+## Port Forwarding
+```
+kubectl port-forward -n nrf svc/restapi 5000
+```
