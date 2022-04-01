@@ -5,7 +5,6 @@ metadata:
   labels:
     app: restapi
   name: restapi
-  namespace: restapi
 spec:
   ports:
   - port: 5000
