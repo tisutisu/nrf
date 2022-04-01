@@ -1,0 +1,4 @@
+database:
+  volume:
+    storageClassName: gp2
+  rootPassword: something
