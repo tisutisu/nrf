@@ -3,11 +3,11 @@ import mysql.connector
 
 db_host = os.getenv('DB_HOST')
 db_pwd = os.getenv('DB_PWD')
-db_name = 'nf_db'
+db_name = os.getenv('DB_NAME') # nf_db
 table_name = 'profiles'
 
 def open_connection():
-    db = mysql.connector.connect(host=db_host, database=db_name, user='root', password=db_pwd)
+    db = mysql.connector.connect(host=db_host, database=db_name, user='root', password=db_pwd, port=3306)
     return db
 
 def close_connection(db):
