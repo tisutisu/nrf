@@ -35,9 +35,12 @@ curl -X DELETE http://localhost:5000/nfprofile/400
 
 ## Helm Cmds
 ```
-helm install nrf-release nrf-chart/ -n nrf
-helm install nrf-release nrf-chart/ -n nrf -f nrf-chart/customvalues.yaml
+helm install restapi-release restapi-chart/ -n nrf
+helm install mysql-release mysql-chart/ -n nrf -f mysql-chart/customvalues.yaml
 ```
+
+##DB Provisioning
+using kubectl exec cmd, login into the pod and run "scripts/sql.sh" cmds for db initialization
 
 ## Port Forwarding
 ```
